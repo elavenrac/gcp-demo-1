@@ -1,0 +1,4 @@
+apache-beam[gcp]==2.16.0
+tensorflow==1.15.0
+tensorflow-transform==0.15.0
+python-snappy==0.5.4
