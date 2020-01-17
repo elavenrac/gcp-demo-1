@@ -102,7 +102,7 @@ def run(argv=None, save_main_session=True):
       help='')
     known_args, pipeline_args = parser.parse_known_args(argv)
     pipeline_args.extend([
-     '--runner=DataflowRunner',
+     '--runner=DirectRunner',
      '--project=ml-sandbox-1-191918',
      '--staging_location=gs://ntc-mls-dataflow-staging/python',
      '--temp_location=gs://ntc-mls-dataflow-tmp/python',
