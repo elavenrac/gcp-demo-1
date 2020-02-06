@@ -125,10 +125,27 @@ def run(argv=None, save_main_session=True):
             validation_data = p | 'ReadBigQuery eval' >> beam.io.Read(beam.io.BigQuerySource(query=("SELECT * FROM `{}.{}.{}` WHERE ml_partition='validation'".format(known_args.project, known_args.dataset, known_args.table)),
               use_standard_sql=True))
 
-            transformed_train_dataset, transform_fn = ( # pylint: disable=unused-variable
-              training_data, get_metadata()) | '{} - Transform'.format('train') >> tft_beam.AnalyzeAndTransformDataset(preprocessing_fn)
+            #transformed_train_dataset, transform_fn = ( # pylint: disable=unused-variable
+            #  training_data, get_metadata()) | '{} - Transform'.format('train') >> tft_beam.AnalyzeAndTransformDataset(preprocessing_fn)
+            #write_tfrecords(transformed_train_dataset, 'gs://{}/{}'.format(known_args.output_bucket, known_args.output_path), 'train')
+            
+            # Reference implementation
+            # transform_fn = my_data | tft_beam.AnalyzeDataset(preprocessing_fn)
+            # transformed_data = (my_data, transform_fn) | tft_beam.TransformDataset()
+            
+            transform_fn = training_data | tft_beam.AnalyzeDataset(preprocessing_fn)
+            transformed_train_dataset = (training_data, transform_fn) | tft_beam.TransformDataset()
             write_tfrecords(transformed_train_dataset, 'gs://{}/{}'.format(known_args.output_bucket, known_args.output_path), 'train')
             
+            transform_fn = test_data | tft_beam.AnalyzeDataset(preprocessing_fn)
+            transformed_test_dataset = (test_data, transform_fn) | tft_beam.TransformDataset()
+            write_tfrecords(transformed_test_dataset, 'gs://{}/{}'.format(known_args.output_bucket, known_args.output_path), 'test')
+
+            transform_fn = validation_data | tft_beam.AnalyzeDataset(preprocessing_fn)
+            transformed_validation_dataset = (validation_data, transform_fn) | tft_beam.TransformDataset()
+            write_tfrecords(transformed_validation_dataset, 'gs://{}/{}'.format(known_args.output_bucket, known_args.output_path), 'validation')
+
+            '''
             transformed_test_dataset, transform_fn = ( # pylint: disable=unused-variable
               test_data, get_metadata()) | '{} - Transform'.format('test') >> tft_beam.AnalyzeAndTransformDataset(preprocessing_fn)
             write_tfrecords(transformed_test_dataset, 'gs://{}/{}'.format(known_args.output_bucket, known_args.output_path), 'test')
@@ -136,7 +153,7 @@ def run(argv=None, save_main_session=True):
             transformed_validation_dataset, transform_fn = ( # pylint: disable=unused-variable
               validation_data, get_metadata())| '{} - Transform'.format('validation') >> tft_beam.AnalyzeAndTransformDataset(preprocessing_fn)
             write_tfrecords(transformed_validation_dataset, 'gs://{}/{}'.format(known_args.output_bucket, known_args.output_path), 'validation')
-            
+            '''
 if __name__ == '__main__':
     logging.getLogger().setLevel(logging.INFO)
     run()
