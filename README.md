@@ -6,7 +6,7 @@ This code package leverages Google Cloud Platform tools to create a model capabl
 
 ### Data preprocessing pipeline
 
-All data preprocessing occurs in a [Google Cloud Dataflow](https://cloud.google.com/dataflow/docs/) job using an [Apache Beam](https://beam.apache.org/) pipeline in the [`dataflow-etl-python/`](dataflow-etl-python/) directory. Instructions for running preprocessing are in that [directory](dataflow-etl-python/README.md).
+All data preprocessing occurs in a [Google Cloud Dataflow](https://cloud.google.com/dataflow/docs/) job using an [Apache Beam](https://beam.apache.org/) pipeline in the [`dataflow-etl-python`](dataflow-etl-python/) directory. Instructions for running preprocessing are in that [directory](dataflow-etl-python/README.md).
 
 ### Tensorflow training application
 
