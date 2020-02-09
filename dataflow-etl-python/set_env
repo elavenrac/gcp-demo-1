@@ -1,0 +1,9 @@
+export PROJECT=$(gcloud config get-value project || echo $PROJECT)
+export REGION=us-central1
+export GCS_OUTPUT_BUCKET=<GCS_BUCKET_NAME>
+export GCS_STAGING_BUCKET=<GCS_BUCKET_NAME>
+export GCS_TEMP_BUCKET=<GCS_BUCKET_NAME>
+export JOB_NAME=<JOB_NAME>
+export NUM_WORKERS=4
+export MACHINE_TYPE=n1-standard-4
+export SERVICE_ACCOUNT=<SERVICE_ACCOUNT>

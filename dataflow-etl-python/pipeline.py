@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 import argparse, logging
+import os
 from typing import Any, Tuple, Dict, Iterator
 import tensorflow as tf 
 import apache_beam as beam
@@ -96,10 +97,10 @@ def run(argv=None, save_main_session=True):
       default='finaltaxi_encoded_super_mini',
       help='')
     parser.add_argument('--output_bucket', dest='output_bucket',
-      default='gcp-cert-demo-1',
+      default=os.getenv("GCS_OUTPUT_BUCKET"),
       help='')
     parser.add_argument('--project', dest='project',
-      default='ml-sandbox-1-191918',
+      default=os.getenv("PROJECT"),
       help='')
     parser.add_argument('--output_path', dest='output_path',
       default='data/tfrecord',
@@ -107,20 +108,22 @@ def run(argv=None, save_main_session=True):
     known_args, pipeline_args = parser.parse_known_args(argv)
     pipeline_args.extend([
      '--runner=DataflowRunner',
-     '--project=ml-sandbox-1-191918',
-     '--staging_location=gs://ntc-mls-dataflow-staging/python',
-     '--temp_location=gs://ntc-mls-dataflow-tmp/python',
-     '--job_name=gcp-demo1-tf-etl-12',
-     '--setup_file=/Users/acarnevale/Projects/ntc-ml/setup.py',
+     '--project={}'.format(os.getenv("PROJECT")),
+     '--staging_location=gs://{}/python/staging'.format(os.getenv("GCS_STAGING_BUCKET")),
+     '--temp_location=gs://{}/python/temp'.format(os.getenv("GCS_TEMP_BUCKET")),
+     '--job_name={}'.format(os.getenv("JOB_NAME")),
+     '--setup_file=./setup.py',
      '--experiments=shuffle_mode=service',
-     '--max_num_workers=4',
-     '--worker_machine_type=n1-standard-4',
-     '--service_account_email=261855689705-compute@developer.gserviceaccount.com',
-     '--region=us-central1'])
+     '--max_num_workers={}'.format(os.getenv("NUM_WORKERS")),
+     '--worker_machine_type={}'.format(os.getenv("MACHINE_TYPE")),
+     '--service_account_email={}'.format(os.getenv("SERVICE_ACCOUNT")),
+     '--region={}'.format(os.getenv("REGION")),
+     '--experiment=ignore_py3_minor_version'
+     ])
 
     pipeline_options = PipelineOptions(pipeline_args).view_as(beam.options.pipeline_options.GoogleCloudOptions)
     with beam.Pipeline(options=pipeline_options) as p:
-        with tft_beam.Context(temp_dir='gs://ntc-mls-dataflow-tmp/python'):
+        with tft_beam.Context(temp_dir='gs://{}/python/temp'.format(os.getenv("GCS_TEMP_BUCKET"))):
             training_data = p | 'ReadBigQuery training' >> beam.io.Read(beam.io.BigQuerySource(query=("SELECT * FROM `{}.{}.{}` WHERE ml_partition='train'".format(known_args.project, known_args.dataset, known_args.table)),
                 use_standard_sql=True))
             test_data = p | 'ReadBigQuery test' >> beam.io.Read(beam.io.BigQuerySource(query=("SELECT * FROM `{}.{}.{}` WHERE ml_partition='test'".format(known_args.project, known_args.dataset, known_args.table)),
@@ -141,5 +144,5 @@ def run(argv=None, save_main_session=True):
             write_tfrecords(transformed_validation_dataset, 'gs://{}/{}'.format(known_args.output_bucket, known_args.output_path), 'validation')
             
 if __name__ == '__main__':
-    logging.getLogger().setLevel(logging.INFO)
-    run()
+  logging.getLogger().setLevel(logging.INFO)
+  run()

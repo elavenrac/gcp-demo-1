@@ -50,21 +50,26 @@ After preprocessing our dataset, we also want to split it into a training and ev
 The training dataset will be used to train the model.
 The evaluation dataset contains elements that the training has never seen, and since we also know the "answers", we'll use these to validate that the training accuracy roughly matches the accuracy on unseen elements.
 
+### Setting Environment Variables
+Environment variables are referenced in the pipeline and needs to be set before running the pipeline. There's a [set_env](set_env) file you can source to make this process easier. 
+
+```bash
+source set_env
+```
+The environment variables necessary are listed below
+```
+PROJECT: GCP Project to run the ETL process 
+REGION: GCP Region to run the pipeline
+GCS_OUTPUT_BUCKET: GCS output bucket
+GCS_STAGING_BUCKET: GCS staging bucket
+GCS_TEMP_BUCKET=: GCS temp bucket
+JOB_NAME: Dataflow job name
+NUM_WORKERS: Number of workers for the pipeline
+MACHINE_TYPE: Machine type to runt he pipeline on
+SERVICE_ACCOUNT: Service account used
+```
 
 With the python virtual environment active, run the processing step with 
 ```bash
-PROJECT=$(gcloud config get-value project)
-WORK_DIR=gs://<your-gcs-bucket>/cloudml-samples/molecules
 python preprocess.py \
-  --runner=DataflowRunner \
-  --project=$PROJECT \ #<project id>
-  --staging_location=gs:/$WORK_DIR/python \ #gs://<proect bucket name>
-  --temp_location=gs://$WORK_DIR/python_temp \ #gs://<proect bucket name>
-  --job_name=$JOB_NAME \ # name of the dataflow job gcp-demo1-tf-etl-12
-  --setup_file=./setup.py \
-  --experiments=shuffle_mode=service \
-  --max_num_workers=4 \
-  --worker_machine_type=$MACHINE_TYPE \ #n1-standard-4
-  --service_account_email=$SERVICE_ASCCOUNT \ #<project_id>-compute@developer.gserviceaccount.com',
-  --region=us-central1
   ```
