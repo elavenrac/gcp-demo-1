@@ -51,7 +51,7 @@ The training dataset will be used to train the model.
 The evaluation dataset contains elements that the training has never seen, and since we also know the "answers", we'll use these to validate that the training accuracy roughly matches the accuracy on unseen elements.
 
 ### Setting Environment Variables
-Environment variables are referenced in the pipeline and needs to be set before running the pipeline. There's a [set_env](set_env) file you can source to make this process easier. 
+Environment variables are referenced in the pipeline and needs to be set before running the pipeline. Use the [set_env](set_env) file to set all the required environment variables
 
 ```bash
 source set_env
