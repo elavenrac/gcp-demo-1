@@ -1,6 +1,7 @@
 # Demo 1 data pipeline
 
-ETL is done by a Google Cloud Dataflow job in `./dataflow-etl-python`. The job will read data from the `bigquery-public-data:chicago_taxi_trips.taxi_trips` public dataset and prepare data for both training and predictions. The job will output data as TFRecords into a GCS bucket. 
+ETL is done by a Google Cloud Dataflow job in `./dataflow-etl-python`. The job will read data from the `bigquery-public-data:chicago_taxi_trips.taxi_trips` public dataset and prepare data for both training and predictions. The job will output data as TFRecords into a GCS bucket. TFRecords will enable more efficient ML training
+
 
 ## ETL prerequisites
 
