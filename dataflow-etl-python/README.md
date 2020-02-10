@@ -72,5 +72,5 @@ SERVICE_ACCOUNT: Service account used
 
 With the python virtual environment active, run the processing step with 
 ```bash
-python preprocess.py
+python pipeline.py
   ```
